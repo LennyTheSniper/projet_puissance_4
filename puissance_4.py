@@ -44,8 +44,11 @@ quadrillage(grid_height, grid_width)
 def affichage_couleur_quadrillage(grid_height, grid_width):
     for x in range(grid_width):
         for y in range(grid_height):
-            canvas.create_oval(x*taille_case_width, y*taille_case_height, (x+1)*taille_case_width, (y+1)*taille_case_height, fill=liste_couleur[plateau[y][x]])
-    quadrillage(grid_height, grid_width)
+            canvas.create_oval(x*taille_case_width+int(taille_case_width/20),
+                                y*taille_case_height+int(taille_case_height/20),
+                                (x+1)*taille_case_width-int(taille_case_width/20),
+                                (y+1)*taille_case_height-int(taille_case_height/20),
+                                fill=liste_couleur[plateau[y][x]])
 affichage_couleur_quadrillage(grid_height, grid_width)
 
 
