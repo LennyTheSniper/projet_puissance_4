@@ -51,6 +51,10 @@ def affichage_couleur_quadrillage(grid_height, grid_width):
                                 fill=liste_couleur[plateau[y][x]])
 affichage_couleur_quadrillage(grid_height, grid_width)
 
+def click(event):
+    print(int(event.x // taille_case_width))
+
+
 
 def sauvegarde () : 
     fic = open ("sauvegarde", "w")
@@ -100,4 +104,5 @@ charger = tk.Button(root, text = "charger une sauvegarde", command = charge, bg 
 canvas.grid(row=0, column=1, columnspan=2)
 sauvegarder.grid(row=1, column=1)
 charger.grid(row=1, column=2)
+canvas.bind('<Button-1>',click)
 root.mainloop()
