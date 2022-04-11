@@ -9,14 +9,16 @@
 ############ IMPORTATION DES MODULES #############
 
 import tkinter as tk
+import random as rd
 
 ############### VARIABLES GLOBALES ###############
 
-CANVAS_HEIGHT, CANVAS_WIDTH = 600, 700
-grid_height, grid_width = 6, 7
+CANVAS_HEIGHT, CANVAS_WIDTH = 500, 700
+grid_height, grid_width = 5, 7
 taille_case_height, taille_case_width = CANVAS_HEIGHT/grid_height, CANVAS_WIDTH/grid_width
 #                    0         1         2
 liste_couleur = ["#FFFFFF","#FF0000","#FFFF00"]
+player = rd.randint(1,2)
 
 ################### FONCTIONS ####################
 
@@ -26,8 +28,9 @@ canvas = tk.Canvas(root, width=CANVAS_WIDTH, height=CANVAS_HEIGHT, bg="#2B2FDD")
 
 
 def plateau_vide():
-    global plateau
+    global plateau, player
     plateau = [[0]*grid_width]*grid_height
+    player = rd.randint(1,2)
 plateau_vide()
 print(plateau)
 
@@ -41,7 +44,7 @@ def quadrillage(grid_height, grid_width):
         y += taille_case_height
 quadrillage(grid_height, grid_width)
 
-def affichage_couleur_quadrillage(grid_height, grid_width):
+def affichage_couleur_quadrillage():
     for x in range(grid_width):
         for y in range(grid_height):
             canvas.create_oval(x*taille_case_width+int(taille_case_width/20),
@@ -49,10 +52,23 @@ def affichage_couleur_quadrillage(grid_height, grid_width):
                                 (x+1)*taille_case_width-int(taille_case_width/20),
                                 (y+1)*taille_case_height-int(taille_case_height/20),
                                 fill=liste_couleur[plateau[y][x]])
-affichage_couleur_quadrillage(grid_height, grid_width)
+affichage_couleur_quadrillage()
 
 def click(event):
-    print(int(event.x // taille_case_width))
+    global player
+    colone_click=int(event.x // taille_case_width)
+    for y in range (grid_height):
+        if plateau[y][colone_click] != 0 or y == grid_height-1:
+            plateau[y+1][colone_click] = player
+            affichage_couleur_quadrillage()
+            if player == 1:
+                player = 2
+            else:
+                player = 1
+            break
+
+
+    
 
 
 
