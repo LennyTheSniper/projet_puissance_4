@@ -29,7 +29,7 @@ canvas = tk.Canvas(root, width=CANVAS_WIDTH, height=CANVAS_HEIGHT, bg="#2B2FDD")
 
 def plateau_vide():
     global plateau, player
-    plateau = [[0]*grid_width]*grid_height
+    plateau = [[0]*grid_width for j in range (grid_height)]
     player = rd.randint(1,2)
 plateau_vide()
 print(plateau)
@@ -55,18 +55,23 @@ def affichage_couleur_quadrillage():
 affichage_couleur_quadrillage()
 
 def click(event):
-    global player
+    global player, grid_height, plateau
     colone_click=int(event.x // taille_case_width)
-    for y in range (grid_height):
-        if plateau[y][colone_click] != 0 or y == grid_height-1:
-            plateau[y+1][colone_click] = player
-            affichage_couleur_quadrillage()
-            if player == 1:
-                player = 2
+    loop = 1
+    y = 0
+    while loop == 1:
+        if y == grid_height or (plateau[y][colone_click] != 0):
+            if y != 0:
+                plateau[y-1][colone_click] = player
+                affichage_couleur_quadrillage()
+                if player == 1:
+                    player = 2
+                else:
+                    player = 1
+                loop = 0
             else:
-                player = 1
-            break
-
+                break
+        y += 1
 
     
 
