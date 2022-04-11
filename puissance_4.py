@@ -27,27 +27,28 @@ canvas = tk.Canvas(root, width=CANVAS_WIDTH, height=CANVAS_HEIGHT, bg="#2B2FDD")
 
 def plateau_vide():
     global plateau
-    plateau = [[0]*grid_height]*grid_height
+    plateau = [[0]*grid_width]*grid_height
 plateau_vide()
-"""
-def quadrillage(nombre_case):
+print(plateau)
+
+def quadrillage(grid_height, grid_width):
     x = 0
     y = 0
-    for i in range(nombre_case):
-        canvas.create_line(x, 0, x, y+CANVAS_SIZE, fill="white")
-        canvas.create_line(0, y, x+CANVAS_SIZE, y, fill="white")
-        x += taille_case_SIZE
-        y += taille_case_SIZE
-quadrillage(taille_plateau)
+    for i in range(max(grid_width,grid_height)+1):
+        canvas.create_line(x, 0, x, y+CANVAS_HEIGHT, fill="#1012A2", width = 2)
+        canvas.create_line(0, y, x+CANVAS_WIDTH, y, fill="#1012A2", width = 2)
+        x += taille_case_width
+        y += taille_case_height
+quadrillage(grid_height, grid_width)
 
-def affichage_couleur_quadrillage(taille_plateau):
-    for x in range(taille_plateau):
-        for y in range(taille_plateau):
-            canvas.create_rectangle(x*taille_case_SIZE, y*taille_case_SIZE, (x+1)*taille_case_SIZE, (y+1)*taille_case_SIZE, fill=liste_couleur[plateau[y][x]])
-    quadrillage(taille_plateau)
+def affichage_couleur_quadrillage(grid_height, grid_width):
+    for x in range(grid_width):
+        for y in range(grid_height):
+            canvas.create_oval(x*taille_case_width, y*taille_case_height, (x+1)*taille_case_width, (y+1)*taille_case_height, fill=liste_couleur[plateau[y][x]])
+    quadrillage(grid_height, grid_width)
+affichage_couleur_quadrillage(grid_height, grid_width)
 
 
-"""
 def sauvegarde () : 
     fic = open ("sauvegarde", "w")
     fic.write(str(taille_plateau)+"\n")
