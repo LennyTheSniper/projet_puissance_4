@@ -13,8 +13,8 @@ import random as rd
 
 ############### VARIABLES GLOBALES ###############
 
-CANVAS_HEIGHT, CANVAS_WIDTH = 500, 700
-grid_height, grid_width = 5, 7
+CANVAS_HEIGHT, CANVAS_WIDTH = 600, 700
+grid_height, grid_width = 6, 7
 taille_case_height, taille_case_width = CANVAS_HEIGHT/grid_height, CANVAS_WIDTH/grid_width
 #                    0         1         2
 liste_couleur = ["#FFFFFF","#FF0000","#FFFF00"]
@@ -32,9 +32,8 @@ def plateau_vide():
     plateau = [[0]*grid_width for j in range (grid_height)]
     player = rd.randint(1,2)
 plateau_vide()
-print(plateau)
 
-def quadrillage(grid_height, grid_width):
+def quadrillage():
     x = 0
     y = 0
     for i in range(max(grid_width,grid_height)+1):
@@ -42,7 +41,7 @@ def quadrillage(grid_height, grid_width):
         canvas.create_line(0, y, x+CANVAS_WIDTH, y, fill="#1012A2", width = 2)
         x += taille_case_width
         y += taille_case_height
-quadrillage(grid_height, grid_width)
+quadrillage()
 
 def affichage_couleur_quadrillage():
     for x in range(grid_width):
@@ -79,29 +78,33 @@ def click(event):
 
 def sauvegarde () : 
     fic = open ("sauvegarde", "w")
-    fic.write(str(taille_plateau)+"\n")
-    for i in range (taille_plateau):
-        for j in range (taille_plateau):
-            fic.write(str(plateau[i][j])+" ")
+    fic.write(str(grid_height)+"\n"+str(grid_width)+"\n")
+    for j in range (grid_height):
+        for i in range (grid_width):
+            fic.write(str(plateau[j][i])+" ")
     fic.close()
 
 
-def charge () :
-    global taille_plateau, plateau
+def charge():
+    global grid_height, grid_width, plateau
     fic = open ("sauvegarde", "r")
+    loop = 0 
     while True:
+        loop += 1
         ligne = fic.readline()
         if ligne == "":
-            affichage_couleur_quadrillage(taille_plateau)
+            affichage_couleur_quadrillage()
             break
         else:
-            if " " not in ligne:
-                taille_plateau = int(ligne)
+            if loop == 1:
+                grid_height = int(ligne)
+            elif loop == 2:
+                grid_width = int(ligne)
             else:
                 split = ligne.split()
-                for i in range (taille_plateau):
-                    for j in range (taille_plateau):
-                        plateau[i][j] = int(split[i*taille_plateau+j])
+                for i in range (grid_width):
+                    for j in range (grid_height):
+                        plateau[j][i] = int(split[i+j*grid_width])
 
 
 
