@@ -14,6 +14,7 @@ import random as rd
 ############### VARIABLES GLOBALES ###############
 
 CANVAS_HEIGHT, CANVAS_WIDTH = 600, 700
+CANVAS2_HEIGHT, CANVAS2_WIDTH = 75, 700
 grid_height, grid_width = 6, 7
 taille_case_height, taille_case_width = CANVAS_HEIGHT/grid_height, CANVAS_WIDTH/grid_width
 #                    0         1         2
@@ -25,7 +26,16 @@ player = rd.randint(1,2)
 root = tk.Tk()
 root.title("Puissance 4")
 canvas = tk.Canvas(root, width=CANVAS_WIDTH, height=CANVAS_HEIGHT, bg="#2B2FDD")
+canvas2 = tk.Canvas(root, width=CANVAS2_WIDTH, height=CANVAS2_HEIGHT, bg="#000000")
 
+def affiche_joueur():
+    global player
+    canvas2.delete("text")
+    if player == 1:
+        title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Au tour du joueur 1", fill="#FFFFFF", font="Helvetica 30 bold", tag="text")
+    elif player == 2:
+        title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Au tour du joueur 2", fill="#FFFFFF", font="Helvetica 30 bold", tag="text")
+affiche_joueur()
 
 def plateau_vide():
     global plateau, player
@@ -68,6 +78,7 @@ def click(event):
                 else:
                     player = 1
                 loop = 0
+                affiche_joueur()
             else:
                 break
         y += 1
@@ -125,8 +136,9 @@ charger = tk.Button(root, text = "charger une sauvegarde", command = charge, bg 
 
 ############## CREATION DE LA FENETRE #############
 
-canvas.grid(row=0, column=1, columnspan=2)
-sauvegarder.grid(row=1, column=1)
-charger.grid(row=1, column=2)
+canvas.grid(row=1, column=0, columnspan=2)
+canvas2.grid(row=0, column=0, columnspan=2)
+sauvegarder.grid(row=2, column=0)
+charger.grid(row=2, column=1)
 canvas.bind('<Button-1>',click)
 root.mainloop()
