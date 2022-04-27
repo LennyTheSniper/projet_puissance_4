@@ -21,7 +21,7 @@ taille_case_height, taille_case_width = CANVAS_HEIGHT/grid_height, CANVAS_WIDTH/
 #                    0         1         2
 liste_couleur = ["#FFFFFF","#FF0000","#FFFF00"]
 player = rd.randint(1,2)
-Win = 0
+Win = 0 ; coups = []
 
 ################### FONCTIONS ####################
 
@@ -37,6 +37,8 @@ def affiche_joueur():
         title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Joueur 1 a gagné!", fill="#FF0000", font="Helvetica 30 bold", tag="text")
     elif Win == 2:
         title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Joueur 2 a gagné!", fill="#FFFF00", font="Helvetica 30 bold", tag="text")
+    elif Win == -1:
+        title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Égalité", fill="#D8D8D8", font="Helvetica 30 bold", tag="text")
     elif player == 1:
         title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Au tour du joueur 1", fill="#FF8080", font="Helvetica 30 bold", tag="text")
     elif player == 2:
@@ -52,6 +54,7 @@ affiche_joueur()
 def win_detect():
     global plateau, Win
     # Check Horizontal
+    
     for x in range(grid_width-3):
         for y in range(grid_height):
             if plateau[y][x] == player and plateau[y][x+1] == player and plateau[y][x+2] == player and plateau[y][x+3] == player:
@@ -75,7 +78,14 @@ def win_detect():
             if plateau[y][x] == player and plateau[y-1][x+1] == player and plateau[y-2][x+2] == player and plateau[y-3][x+3] == player:
                 Win = player
                 break
-
+    # Check Egalité
+    check_deux = 0
+    for x in range(grid_width):
+        for y in range(grid_height):
+            if plateau[y][x] == 0:
+                check_deux = 1
+    if check_deux == 0:
+        Win = -1
 
 
 
@@ -92,13 +102,14 @@ def quadrillage():
 quadrillage()
 
 def affichage_couleur_quadrillage():
+    canvas.delete("jetons")
     for x in range(grid_width):
         for y in range(grid_height):
             canvas.create_oval(x*taille_case_width+int(taille_case_width/20),
                                 y*taille_case_height+int(taille_case_height/20),
                                 (x+1)*taille_case_width-int(taille_case_width/20),
                                 (y+1)*taille_case_height-int(taille_case_height/20),
-                                fill=liste_couleur[plateau[y][x]])
+                                fill=liste_couleur[plateau[y][x]],tag="jetons")
 affichage_couleur_quadrillage()
 
 def click(event):
@@ -111,6 +122,7 @@ def click(event):
             if y == grid_height or (plateau[y][colone_click] != 0):
                 if y != 0:
                     plateau[y-1][colone_click] = player
+                    coups.append(colone_click)
                     win_detect()
                     affichage_couleur_quadrillage()
                     if player == 1:
@@ -125,13 +137,26 @@ def click(event):
         else:
             loop = 0
 
-
+def undo ():
+    global coups, plateau, player
+    if coups != []:
+        for y in range (grid_height):
+            if plateau[y][coups[-1]] != 0:
+                plateau[y][coups[-1]] = 0
+                coups = coups[:-1]
+                if player == 1:
+                    player = 2
+                else:
+                    player = 1
+                affichage_couleur_quadrillage()
+                affiche_joueur()
+                break
 
 
 
 def sauvegarde () : 
     fic = open ("sauvegarde", "w")
-    fic.write(str(grid_height)+"\n"+str(grid_width)+"\n")
+    fic.write(str(player)+"\n"+str(grid_height)+"\n"+str(grid_width)+"\n")
     for j in range (grid_height):
         for i in range (grid_width):
             fic.write(str(plateau[j][i])+" ")
@@ -139,7 +164,7 @@ def sauvegarde () :
 
 
 def charge():
-    global grid_height, grid_width, plateau
+    global grid_height, grid_width, plateau, player, coups
     fic = open ("sauvegarde", "r")
     loop = 0 
     while True:
@@ -147,11 +172,16 @@ def charge():
         ligne = fic.readline()
         if ligne == "":
             affichage_couleur_quadrillage()
+            win_detect()
+            affiche_joueur()
+            coups = []
             break
         else:
             if loop == 1:
-                grid_height = int(ligne)
+                player = int(ligne)
             elif loop == 2:
+                grid_height = int(ligne)
+            elif loop == 3:
                 grid_width = int(ligne)
             else:
                 split = ligne.split()
@@ -172,15 +202,16 @@ def charge():
 
 
 ############# LISTE DE TOUS LES BOUTONS ############
-sauvegarder = tk.Button(root, text = "sauvegarder", command = sauvegarde, bg = 'grey')
-charger = tk.Button(root, text = "charger une sauvegarde", command = charge, bg = 'grey')
-
+sauvegarder = tk.Button(root, text = "Sauvegarde", command = sauvegarde, bg = 'grey')
+charger = tk.Button(root, text = "Charger une sauvegarde", command = charge, bg = 'grey')
+undo = tk.Button(root, text = "Annuler", command = undo, bg = 'grey')
 
 ############## CREATION DE LA FENETRE #############
 
-canvas.grid(row=1, column=0, columnspan=2)
-canvas2.grid(row=0, column=0, columnspan=2)
+canvas.grid(row=1, column=0, columnspan=3)
+canvas2.grid(row=0, column=0, columnspan=3)
 sauvegarder.grid(row=2, column=0)
-charger.grid(row=2, column=1)
+charger.grid(row=2, column=2)
+undo.grid(row=2, column=1)
 canvas.bind('<Button-1>',click)
 root.mainloop()
