@@ -54,7 +54,6 @@ affiche_joueur()
 def win_detect():
     global plateau, Win
     # Check Horizontal
-    
     for x in range(grid_width-3):
         for y in range(grid_height):
             if plateau[y][x] == player and plateau[y][x+1] == player and plateau[y][x+2] == player and plateau[y][x+3] == player:
