@@ -8,6 +8,7 @@
 
 ############ IMPORTATION DES MODULES #############
 
+from glob import glob
 import tkinter as tk
 import random as rd
 
@@ -20,6 +21,7 @@ taille_case_height, taille_case_width = CANVAS_HEIGHT/grid_height, CANVAS_WIDTH/
 #                    0         1         2
 liste_couleur = ["#FFFFFF","#FF0000","#FFFF00"]
 player = rd.randint(1,2)
+Win = 0
 
 ################### FONCTIONS ####################
 
@@ -31,17 +33,53 @@ canvas2 = tk.Canvas(root, width=CANVAS2_WIDTH, height=CANVAS2_HEIGHT, bg="#00000
 def affiche_joueur():
     global player
     canvas2.delete("text")
-    if player == 1:
-        title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Au tour du joueur 1", fill="#FFFFFF", font="Helvetica 30 bold", tag="text")
+    if Win == 1:
+        title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Joueur 1 a gagné!", fill="#FF0000", font="Helvetica 30 bold", tag="text")
+    elif Win == 2:
+        title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Joueur 2 a gagné!", fill="#FFFF00", font="Helvetica 30 bold", tag="text")
+    elif player == 1:
+        title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Au tour du joueur 1", fill="#FF8080", font="Helvetica 30 bold", tag="text")
     elif player == 2:
-        title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Au tour du joueur 2", fill="#FFFFFF", font="Helvetica 30 bold", tag="text")
-affiche_joueur()
+        title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Au tour du joueur 2", fill="#FFFF80", font="Helvetica 30 bold", tag="text")
 
 def plateau_vide():
     global plateau, player
     plateau = [[0]*grid_width for j in range (grid_height)]
     player = rd.randint(1,2)
 plateau_vide()
+affiche_joueur()
+
+def win_detect():
+    global plateau, Win
+    # Check Horizontal
+    for x in range(grid_width-3):
+        for y in range(grid_height):
+            if plateau[y][x] == player and plateau[y][x+1] == player and plateau[y][x+2] == player and plateau[y][x+3] == player:
+                Win = player
+                break
+    # Check Vertical
+    for x in range(grid_width):
+        for y in range(grid_height-3):
+            if plateau[y][x] == player and plateau[y+1][x] == player and plateau[y+2][x] == player and plateau[y+3][x] == player:
+                Win = player
+                break
+    # Check Diagonale /
+    for x in range(grid_width-3):
+        for y in range(grid_height-3):
+            if plateau[y][x] == player and plateau[y+1][x+1] == player and plateau[y+2][x+2] == player and plateau[y+3][x+3] == player:
+                Win = player
+                break
+    # Check Diagonale \
+    for x in range(grid_width-3):
+        for y in range(3, grid_height):
+            if plateau[y][x] == player and plateau[y-1][x+1] == player and plateau[y-2][x+2] == player and plateau[y-3][x+3] == player:
+                Win = player
+                break
+
+
+
+
+
 
 def quadrillage():
     x = 0
@@ -69,21 +107,25 @@ def click(event):
     loop = 1
     y = 0
     while loop == 1:
-        if y == grid_height or (plateau[y][colone_click] != 0):
-            if y != 0:
-                plateau[y-1][colone_click] = player
-                affichage_couleur_quadrillage()
-                if player == 1:
-                    player = 2
+        if Win == 0:
+            if y == grid_height or (plateau[y][colone_click] != 0):
+                if y != 0:
+                    plateau[y-1][colone_click] = player
+                    win_detect()
+                    affichage_couleur_quadrillage()
+                    if player == 1:
+                        player = 2
+                    else:
+                        player = 1
+                    loop = 0
+                    affiche_joueur()
                 else:
-                    player = 1
-                loop = 0
-                affiche_joueur()
-            else:
-                break
-        y += 1
+                    break
+            y += 1
+        else:
+            loop = 0
 
-    
+
 
 
 
