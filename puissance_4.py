@@ -236,32 +236,37 @@ def charge():
                     for j in range (grid_height):
                         plateau[j][i] = int(split[i+j*grid_width])
 
-def score (): 
+def score(): 
     global Win, win1, win2
     compteur_win1['text'] = str(win1)
     compteur_win2['text'] = str(win2)
-
-
+    plateau_vide()
 
 def set_match(): 
     pass
 
 
+def restart():
+    global win1, win2
+    plateau_vide()
+    win1, win2 = 0, 0
+    score()
+
+
 ############# LISTE DE TOUS LES BOUTONS ############
 
-# Enregistre les 4 boutons "Sauvegarde", "Charger une sauvegarde", "Annuler", et "Reset"
+# Enregistre les boutons "Sauvegarde", "Charger une sauvegarde", "Annuler", "Reset" et "Restart"
 sauvegarder = tk.Button(root, text = "Sauvegarde", command = sauvegarde, bg = 'grey')
 charger = tk.Button(root, text = "Charger une sauvegarde", command = charge, bg = 'grey')
 undo = tk.Button(root, text = "Annuler", command = undo, bg = 'grey')
 reset = tk.Button(root, text = "Reset", command = plateau_vide, bg = 'grey')
+restart = tk.Button(root, text = "Restart", command = restart, bg = 'grey')
 
 ############## CREATION DE LA FENETRE #############
 
 # espacements
 espacement_horizon = tk.Canvas(root, width=100, height=1, bg="white")
 espacement_horizon.grid (row=0, column=6)
-espacement_verticale = tk.Canvas(root, width=1, height=50, bg="white")
-espacement_verticale.grid (row=5, column=6)
 
 # Compteurs de points 
 compteur_win1 = tk.Label(root, text=0, font=("Arial", 52), fg='#FF0000')
@@ -276,6 +281,7 @@ sauvegarder.grid(row=5, column=0)
 charger.grid(row=5, column=3)
 undo.grid(row=5, column=1)
 reset.grid(row=5, column=2)
+restart.grid(row=5, column=6)
 # Créée le lien entre un clic gauche sur le canvas principal et le fonction "click"
 canvas.bind('<Button-1>',click)
 # Check constant des inputs du joueur
