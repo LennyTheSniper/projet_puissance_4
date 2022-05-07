@@ -66,7 +66,6 @@ def affiche_joueur():
         title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Au tour du joueur 2", fill="#FFFF80", font="Helvetica 30 bold", tag="text")
 affiche_joueur()
 
-
 def win_detect():
     global plateau, Win
     # Ce programme vérifie toutes les directions sur toutes les cases si un joueur a aligné assez de pions + si il y a égalité
@@ -197,8 +196,6 @@ def undo ():
                     affiche_joueur()
                     break
 
-
-
 def sauvegarde():
     # Ce programme enregistre l'état de la partie dans un fichier secondaire
     fic = open ("sauvegarde", "w")
@@ -207,7 +204,6 @@ def sauvegarde():
         for i in range (grid_width):
             fic.write(str(plateau[j][i])+" ")
     fic.close()
-
 
 def charge():
     # Ce programme charge l'état de la partie depuis un fichier secondaire
@@ -242,16 +238,14 @@ def score():
     compteur_win2['text'] = str(win2)
     plateau_vide()
 
-def set_match(): 
-    pass
-
-
 def restart():
     global win1, win2
     plateau_vide()
     win1, win2 = 0, 0
     score()
 
+def set_match(): 
+    pass
 
 ############# LISTE DE TOUS LES BOUTONS ############
 
