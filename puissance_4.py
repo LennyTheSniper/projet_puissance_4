@@ -1,10 +1,10 @@
-###################
-# MI TD1
-# Zachary MARIANI
-# Lenny BARBE
-# William BRASSART
-# https://github.com/LennyTheSniper/projet_puissance_4
-###########################################
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+# MI TD1                                                #
+# Zachary MARIANI                                       #
+# Lenny BARBE                                           #
+# William BRASSART                                      #
+# https://github.com/LennyTheSniper/projet_puissance_4  #
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 
 ############ IMPORTATION DES MODULES #############
 
@@ -14,23 +14,36 @@ import random as rd
 
 ############### VARIABLES GLOBALES ###############
 
+# Les dimentions en pixels du canvas du jeu
 CANVAS_HEIGHT, CANVAS_WIDTH = 600, 700
+# Les dimentions en pixels du petit écran au dessus du jeu
 CANVAS2_HEIGHT, CANVAS2_WIDTH = 75, 700
+# Les dimentions de la grille de jeu en cases
 grid_height, grid_width = 6, 7
+# Le nombre de cases à aligner avant de gagner
+alignement = 4
+# Calcule la taille d'une case en fonction de parametres mentionnés avant
 taille_case_height, taille_case_width = CANVAS_HEIGHT/grid_height, CANVAS_WIDTH/grid_width
+# Couleur d'une case en jeu en fonction de si elle appartien eu joueur X 
 #                    0         1         2
 liste_couleur = ["#FFFFFF","#FF0000","#FFFF00"]
+# Choisis un joueur aléatoirement
 player = rd.randint(1,2)
+# Setup variables utile a certaines fontions
 Win = 0 ; coups = []
+# Création d'un plateau vide
+plateau = [[0]*grid_width for j in range (grid_height)]
 
 ################### FONCTIONS ####################
 
+# Création des 2 différents canvas
 root = tk.Tk()
 root.title("Puissance 4")
 canvas = tk.Canvas(root, width=CANVAS_WIDTH, height=CANVAS_HEIGHT, bg="#2B2FDD")
 canvas2 = tk.Canvas(root, width=CANVAS2_WIDTH, height=CANVAS2_HEIGHT, bg="#000000")
 
 def affiche_joueur():
+    # Ce programe gère l'affichage du second écran en fonction de l'état de la partie
     global player
     canvas2.delete("text")
     if Win == 1:
@@ -44,53 +57,60 @@ def affiche_joueur():
     elif player == 2:
         title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Au tour du joueur 2", fill="#FFFF80", font="Helvetica 30 bold", tag="text")
 
-def plateau_vide():
-    global plateau, player
-    plateau = [[0]*grid_width for j in range (grid_height)]
-    player = rd.randint(1,2)
-plateau_vide()
-affiche_joueur()
-
 def win_detect():
     global plateau, Win
+    # Ce programme vérifie toutes les directions sur toutes les cases si un joueur a aligné assez de pions + si il y a égalité
     # Check Horizontal
-    for x in range(grid_width-3):
+    for x in range(grid_width-(alignement-1)):
         for y in range(grid_height):
-            if plateau[y][x] == player and plateau[y][x+1] == player and plateau[y][x+2] == player and plateau[y][x+3] == player:
+            check = 0
+            for z in range(alignement):
+                if plateau[y][x+z] != player:
+                    check = 1
+            if check == 0:
                 Win = player
                 break
     # Check Vertical
     for x in range(grid_width):
-        for y in range(grid_height-3):
-            if plateau[y][x] == player and plateau[y+1][x] == player and plateau[y+2][x] == player and plateau[y+3][x] == player:
+        for y in range(grid_height-(alignement-1)):
+            check = 0
+            for z in range(alignement):
+                if plateau[y+z][x] != player:
+                    check = 1
+            if check == 0:
                 Win = player
                 break
-    # Check Diagonale /
-    for x in range(grid_width-3):
-        for y in range(grid_height-3):
-            if plateau[y][x] == player and plateau[y+1][x+1] == player and plateau[y+2][x+2] == player and plateau[y+3][x+3] == player:
+    # Check Diagonal /
+    for x in range(grid_width-(alignement-1)):
+        for y in range(grid_height-(alignement-1)):
+            check = 0
+            for z in range(alignement):
+                if plateau[y+z][x+z] != player:
+                    check = 1
+            if check == 0:
                 Win = player
                 break
-    # Check Diagonale \
-    for x in range(grid_width-3):
-        for y in range(3, grid_height):
-            if plateau[y][x] == player and plateau[y-1][x+1] == player and plateau[y-2][x+2] == player and plateau[y-3][x+3] == player:
+    # Check Diagonal \
+    for x in range(grid_width-(alignement-1)):
+        for y in range((alignement-1), grid_height):
+            check = 0
+            for z in range(alignement):
+                if plateau[y-z][x+z] != player:
+                    check = 1
+            if check == 0:
                 Win = player
                 break
     # Check Egalité
-    check_deux = 0
+    check = 0
     for x in range(grid_width):
         for y in range(grid_height):
             if plateau[y][x] == 0:
-                check_deux = 1
-    if check_deux == 0:
+                check = 1
+    if check == 0:
         Win = -1
 
-
-
-
-
 def quadrillage():
+    # Ce programme dessine le quadrillage de la grille de jeu pour une meilleure visibilité
     x = 0
     y = 0
     for i in range(max(grid_width,grid_height)+1):
@@ -101,6 +121,7 @@ def quadrillage():
 quadrillage()
 
 def affichage_couleur_quadrillage():
+    # Ce programme dessine les jetons sur le canvas en fonction de quel joueur occupe quelle case
     canvas.delete("jetons")
     for x in range(grid_width):
         for y in range(grid_height):
@@ -111,7 +132,21 @@ def affichage_couleur_quadrillage():
                                 fill=liste_couleur[plateau[y][x]],tag="jetons")
 affichage_couleur_quadrillage()
 
+def plateau_vide():
+    # Ce programme permet de recommencer une partie de 0
+    global plateau, player, Win, coups
+    plateau = [[0]*grid_width for j in range (grid_height)]
+    player = rd.randint(1,2)
+    coups = []
+    Win = 0
+    affiche_joueur()
+    affichage_couleur_quadrillage()
+plateau_vide()
+affiche_joueur()
+
 def click(event):
+    # Ce programme est appelé quand on clique sur le canvas de jeu, vérifie quelle collone du plateau on a cliqué,
+    # ajoute un pion à l'emplacement correct, et enregistre le coup dans une liste
     global player, grid_height, plateau
     colone_click=int(event.x // taille_case_width)
     loop = 1
@@ -137,23 +172,26 @@ def click(event):
             loop = 0
 
 def undo ():
-    global coups, plateau, player
-    if coups != []:
-        for y in range (grid_height):
-            if plateau[y][coups[-1]] != 0:
-                plateau[y][coups[-1]] = 0
-                coups = coups[:-1]
-                if player == 1:
-                    player = 2
-                else:
-                    player = 1
-                affichage_couleur_quadrillage()
-                affiche_joueur()
-                break
+    # Ce programme permet d'annulé un coup si le jeu le permet
+    global coups, plateau, player, Win
+    if Win == 0:
+        if coups != []:
+            for y in range (grid_height):
+                if plateau[y][coups[-1]] != 0:
+                    plateau[y][coups[-1]] = 0
+                    coups = coups[:-1]
+                    if player == 1:
+                        player = 2
+                    else:
+                        player = 1
+                    affichage_couleur_quadrillage()
+                    affiche_joueur()
+                    break
 
 
 
-def sauvegarde () : 
+def sauvegarde():
+    # Ce programme enregistre l'état de la partie dans un fichier secondaire
     fic = open ("sauvegarde", "w")
     fic.write(str(player)+"\n"+str(grid_height)+"\n"+str(grid_width)+"\n")
     for j in range (grid_height):
@@ -163,6 +201,7 @@ def sauvegarde () :
 
 
 def charge():
+    # Ce programme charge l'état de la partie depuis un fichier secondaire
     global grid_height, grid_width, plateau, player, coups
     fic = open ("sauvegarde", "r")
     loop = 0 
@@ -194,23 +233,25 @@ def charge():
 
 
 
-
-
-
-
-
-
 ############# LISTE DE TOUS LES BOUTONS ############
+
+# Enregistre les 4 boutons "Sauvegarde", "Charger une sauvegarde", "Annuler", et "Reset"
 sauvegarder = tk.Button(root, text = "Sauvegarde", command = sauvegarde, bg = 'grey')
 charger = tk.Button(root, text = "Charger une sauvegarde", command = charge, bg = 'grey')
 undo = tk.Button(root, text = "Annuler", command = undo, bg = 'grey')
+reset = tk.Button(root, text = "Reset", command = plateau_vide, bg = 'grey')
 
 ############## CREATION DE LA FENETRE #############
 
-canvas.grid(row=1, column=0, columnspan=3)
-canvas2.grid(row=0, column=0, columnspan=3)
+# Place les 2 canvas en jeu
+canvas.grid(row=1, column=0, columnspan=4)
+canvas2.grid(row=0, column=0, columnspan=4)
+# Place les boutons en jeu
 sauvegarder.grid(row=2, column=0)
-charger.grid(row=2, column=2)
+charger.grid(row=2, column=3)
 undo.grid(row=2, column=1)
+reset.grid(row=2, column=2)
+# Créée le lien entre un clic gauche sur le canvas principal et le fonction "click"
 canvas.bind('<Button-1>',click)
+# Check constant des inputs du joueur
 root.mainloop()
