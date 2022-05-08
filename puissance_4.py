@@ -30,11 +30,12 @@ taille_case_height, taille_case_width = CANVAS_HEIGHT/grid_height, CANVAS_WIDTH/
 #                    0         1         2
 liste_couleur = ["#FFFFFF","#FF0000","#FFFF00"]
 # Choisis un joueur aléatoirement
-player = rd.randint(1,2)
+player_init = rd.randint(1,2)
+player = player_init
 # Setup variables utile a certaines fontions
 Win = 0 ; coups = []
-win1 = 0
-win2 = 0
+win1 = 0 ; win2 = 0
+match = 3
 # Création d'un plateau vide
 plateau = [[0]*grid_width for j in range (grid_height)]
 
@@ -54,10 +55,16 @@ def affiche_joueur():
         title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Joueur 1 a gagné!", fill="#FF0000", font="Helvetica 30 bold", tag="text")
         win1 += 1
         score()
+        if win1 >= match:
+            canvas2.delete("text")
+            title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Joueur 1 a gagné le match!", fill="#E80000", font="Helvetica 30 bold", tag="text")
     elif Win == 2:
         title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Joueur 2 a gagné!", fill="#FFFF00", font="Helvetica 30 bold", tag="text")
         win2 += 1
         score()
+        if win2 >= match:
+            canvas2.delete("text")
+            title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Joueur 2 a gagné le match!", fill="#E8E80C", font="Helvetica 30 bold", tag="text")
     elif Win == -1:
         title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Égalité", fill="#D8D8D8", font="Helvetica 30 bold", tag="text")
     elif player == 1:
@@ -65,6 +72,7 @@ def affiche_joueur():
     elif player == 2:
         title_text = canvas2.create_text(CANVAS2_WIDTH//2, CANVAS2_HEIGHT//2, text="Au tour du joueur 2", fill="#FFFF80", font="Helvetica 30 bold", tag="text")
 affiche_joueur()
+
 
 def win_detect():
     global plateau, Win
@@ -143,11 +151,19 @@ affichage_couleur_quadrillage()
 
 def plateau_vide():
     # Ce programme permet de recommencer une partie de 0
-    global plateau, player, Win, coups
+    global plateau, player, player_init, Win, coups, win1, win2
     plateau = [[0]*grid_width for j in range (grid_height)]
-    player = rd.randint(1,2)
+    if player_init == 1:
+        player_init = 2
+    else:
+        player_init = 1
+    player = player_init
     coups = []
     Win = 0
+    if win1 >= match or win2 >= match:
+        win1 = 0
+        win2 = 0
+        score()
     affiche_joueur()
     affichage_couleur_quadrillage()
 plateau_vide()
@@ -180,7 +196,7 @@ def click(event):
             loop = 0
 
 def undo ():
-    # Ce programme permet d'annulé un coup si le jeu le permet
+    # Ce programme permet d'annuler un coup si le jeu le permet
     global coups, plateau, player, Win
     if Win == 0:
         if coups != []:
@@ -196,6 +212,8 @@ def undo ():
                     affiche_joueur()
                     break
 
+
+
 def sauvegarde():
     # Ce programme enregistre l'état de la partie dans un fichier secondaire
     fic = open ("sauvegarde", "w")
@@ -204,6 +222,7 @@ def sauvegarde():
         for i in range (grid_width):
             fic.write(str(plateau[j][i])+" ")
     fic.close()
+
 
 def charge():
     # Ce programme charge l'état de la partie depuis un fichier secondaire
@@ -232,50 +251,48 @@ def charge():
                     for j in range (grid_height):
                         plateau[j][i] = int(split[i+j*grid_width])
 
-def score(): 
+def score ():
+    # Ce programme change le label à la valeur du score
     global Win, win1, win2
     compteur_win1['text'] = str(win1)
     compteur_win2['text'] = str(win2)
-    plateau_vide()
 
-def restart():
-    global win1, win2
-    plateau_vide()
-    win1, win2 = 0, 0
-    score()
 
-def set_match(): 
-    pass
+
+def set_match():
+    global match
+    match = int(input("Combiens de points avant de gagner une partie?"))
+
 
 ############# LISTE DE TOUS LES BOUTONS ############
 
-# Enregistre les boutons "Sauvegarde", "Charger une sauvegarde", "Annuler", "Reset" et "Restart"
+# Enregistre les 4 boutons "Sauvegarde", "Charger une sauvegarde", "Annuler", et "Reset"
 sauvegarder = tk.Button(root, text = "Sauvegarde", command = sauvegarde, bg = 'grey')
 charger = tk.Button(root, text = "Charger une sauvegarde", command = charge, bg = 'grey')
 undo = tk.Button(root, text = "Annuler", command = undo, bg = 'grey')
 reset = tk.Button(root, text = "Reset", command = plateau_vide, bg = 'grey')
-restart = tk.Button(root, text = "Restart", command = restart, bg = 'grey')
+set_match = tk.Button(root, text = "Set Match", command = set_match, bg = 'grey')
 
 ############## CREATION DE LA FENETRE #############
 
 # espacements
-espacement_horizon = tk.Canvas(root, width=100, height=1, bg="white")
-espacement_horizon.grid (row=0, column=6)
+espacement_verticale = tk.Canvas(root, width=1, height=50, bg="white")
+espacement_verticale.grid (row=5, column=6)
 
 # Compteurs de points 
-compteur_win1 = tk.Label(root, text=0, font=("Arial", 52), fg='#FF0000')
-compteur_win2 = tk.Label(root, text=0, font=("Arial", 52), fg='#FFF000')
-compteur_win1.grid (row=2,column=6)
-compteur_win2.grid (row=3,column=6)
+compteur_win1 = tk.Label(root, text=0, font=("Arial", 52), fg='#E80000')
+compteur_win2 = tk.Label(root, text=0, font=("Arial", 52), fg='#E8E80C')
+compteur_win1.grid (row=2,column=4)
+compteur_win2.grid (row=3,column=4)
 # Place les canvas en jeu
-canvas.grid(row=1, column=0, columnspan=5, rowspan=4)
-canvas2.grid(row=0, column=0, columnspan=5)
+canvas.grid(row=1, column=0, columnspan=4, rowspan=4)
+canvas2.grid(row=0, column=0, columnspan=4)
 # Place les boutons en jeu
 sauvegarder.grid(row=5, column=0)
 charger.grid(row=5, column=3)
 undo.grid(row=5, column=1)
 reset.grid(row=5, column=2)
-restart.grid(row=5, column=6)
+set_match.grid(row=5, column=4)
 # Créée le lien entre un clic gauche sur le canvas principal et le fonction "click"
 canvas.bind('<Button-1>',click)
 # Check constant des inputs du joueur
