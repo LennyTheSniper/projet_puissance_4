@@ -23,6 +23,7 @@ Pour customiser une partie, vous pouvez modifier:
     "CANVAS2_HEIGHT, CANVAS2_WIDTH" (les dimentions du petit écran au dessus du jeu) (par défaut = 75, 700)
     "grid_height, grid_width" (les dimentions de la grille de jeu en cases) (par défaut = 6, 7)
     "alignement" (le nombre de cases à aligner avant de gagner) (par défaut = 4)
+    Le nombre de parties avant de gagner le match en cliquant sur "Set Match" en jeu, puis entrer dans la console le nombres de points avant de gagner un match
 
     Merci de ne pas toucher aux autres variables, nous ne garantissons pas que cela fonctionnera en votre faveur.
     Merci de ne pas mettre "alignement" a une valeur plus grande que "grid_height" ou "grid_width", cela rend une partie très difficile voire impossible.
