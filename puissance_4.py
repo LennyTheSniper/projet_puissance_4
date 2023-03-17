@@ -8,7 +8,6 @@
 
 ############ IMPORTATION DES MODULES #############
 
-from glob import glob
 import tkinter as tk
 import random as rd
 
